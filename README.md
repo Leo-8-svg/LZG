@@ -1,0 +1,2 @@
+# LZG
+C language corsework 
