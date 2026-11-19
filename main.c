@@ -1,6 +1,24 @@
 #include <stdio.h>
 #include "include/tokenizer.h"
 
+/*Array and numbers of documents to store*/
+typedef struct{
+    const Document *documents; //Pointer to ducument array
+    int count;
+} 
+DocumentCollenct;
+
+int collection_wordcount(const void *data, int doc_id){
+
+    const DocumentCollenct *collection=data;
+
+    if(collection== NULL|| collection->documents== NULL||doc_id<0||doc_id>=collection->count){
+        return -1;
+    }
+    return collection->documents[doc_id].word_count;
+
+}
+
 int main(void){
     Document docs[MAX_DOCS];
 
@@ -11,9 +29,15 @@ int main(void){
         return 1;
     }
 
-    printf("Documents: %d\n", n);
-    printf("First file: %s\n", docs[0].filename);
+    printf("The Documents: %d\n", n);
+
+    printf("The First file: %s\n", docs[0].filename);
+
     printf("Word count: %d\n", docs[0].word_count);
+
+    DocumentCollenct collection= {docs, n};
+    printf("Adapter word count: %d\n", collection_wordcount(&collection, 0));
+
 
 
     char query[256];
