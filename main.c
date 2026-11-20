@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "include/tokenizer.h"
+#include "index.h"
+#include "search.h"
 
 /*Array and numbers of documents to store*/
 typedef struct{
@@ -17,6 +19,20 @@ int collection_wordcount(const void *data, int doc_id){
     }
     return collection->documents[doc_id].word_count;
 
+}
+
+const char *collection_filename(const void *data, int doc_id)
+{
+    const DocumentCollenct *collection = data;
+
+    if (collection == NULL ||
+        collection->documents == NULL ||
+        doc_id < 0 ||
+        doc_id >= collection->count) {
+        return NULL;
+    }
+
+    return collection->documents[doc_id].filename;
 }
 
 int main(void){
@@ -38,7 +54,15 @@ int main(void){
     DocumentCollenct collection= {docs, n};
     printf("Adapter word count: %d\n", collection_wordcount(&collection, 0));
 
+    const char *name = collection_filename(&collection, 0);
 
+    if (name != NULL) {
+        printf("Adapter filename: %s\n", name);
+    } else {
+        printf("Cannot get filename.\n");
+    }
+
+    
 
     char query[256];
 

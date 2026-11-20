@@ -20,38 +20,7 @@
  *   layer, search_set_adapter_hooks() can also be used to inject callbacks.
  */
 
-#ifndef EXTERNAL_TYPES_DEFINED
-
-/*
- * A posting is one term -> one document relationship.  Posting lists are
- * singly linked because the course recommends this representation and
- * because it makes the adapter boundary easy to replace later.
- */
-typedef struct PostingNode {
-    int doc_id;
-    int term_frequency;
-    struct PostingNode *next;
-} PostingNode;
-
-/* One term and its posting-list head. */
-typedef struct IndexEntry {
-    char *term;
-    PostingNode *postings;
-    struct IndexEntry *next;
-} IndexEntry;
-
-/*
- * Local/default inverted index.  document_count is the collection size N,
- * while unique_term_count is useful for diagnostics and indexing reports.
- */
-typedef struct InvertedIndex {
-    IndexEntry *head;
-    int document_count;
-    int unique_term_count;
-} InvertedIndex;
-
-#endif /* EXTERNAL_TYPES_DEFINED */
-
+#include "index.h"
 /*
  * Posting field-access macros.
  *
