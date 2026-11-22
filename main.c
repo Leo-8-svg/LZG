@@ -2,38 +2,9 @@
 #include "include/tokenizer.h"
 #include "index.h"
 #include "search.h"
+#include "collection.h"
 
-/*Array and numbers of documents to store*/
-typedef struct{
-    const Document *documents; //Pointer to ducument array
-    int count;
-} 
-DocumentCollenct;
 
-int collection_wordcount(const void *data, int doc_id){
-
-    const DocumentCollenct *collection=data;
-
-    if(collection== NULL|| collection->documents== NULL||doc_id<0||doc_id>=collection->count){
-        return -1;
-    }
-    return collection->documents[doc_id].word_count;
-
-}
-
-const char *collection_filename(const void *data, int doc_id)
-{
-    const DocumentCollenct *collection = data;
-
-    if (collection == NULL ||
-        collection->documents == NULL ||
-        doc_id < 0 ||
-        doc_id >= collection->count) {
-        return NULL;
-    }
-
-    return collection->documents[doc_id].filename;
-}
 
 int main(void){
     Document docs[MAX_DOCS];
@@ -62,7 +33,18 @@ int main(void){
         printf("Cannot get filename.\n");
     }
 
-    
+    //to built the index from documents
+    InvertedIndex index = {0};
+
+    if (index_build_from_documents(&index, docs, n) != 0) {
+        printf("Failed to build index.\n");
+        index_free(&index);
+        return 1;
+    }
+
+    printf("Indexed documents: %d\n", index.document_count);
+
+    printf("Unique terms: %d\n", index.unique_term_count);
 
     char query[256];
 
@@ -70,10 +52,25 @@ int main(void){
 
     if (fgets(query, sizeof(query), stdin) == NULL) {
         printf("Failed to read query.\n");
+        index_free(&index);
         return 1;
     }
 
     printf("Query received: %s", query);
+
+    SearchResponse *response = search_indexed(
+        &index, &collection, n, query, 5, SCORE_TERM_FREQUENCY);
+
+    if (response == NULL) {
+        printf("Failed to search.\n");
+        index_free(&index);
+        return 1;
+    }
+
+    print_search_results(response, 5);
+    free_search_response(response);
+
+    index_free(&index);
 
     return 0;
 }
