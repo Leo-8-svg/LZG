@@ -13,4 +13,7 @@ int collection_wordcount(const void *data, int doc_id);
 
 const char *collection_filename(const void *data, int doc_id);
 
+int collection_save_metadata(const DocumentCollenct *collection, const char *path);
+int collection_matches_metadata(const DocumentCollenct *collection, const char *path);
+
 #endif
