@@ -191,13 +191,13 @@ void ui_show_statistics(const DocumentCollenct *collection,
     printf("\n--- Statistics ---\n");
     printf("Documents: %d\n", doc_count);
 
-    if (collection != NULL && collection->docs != NULL && doc_count > 0) {
+    if (collection != NULL && collection->documents != NULL && doc_count > 0) {
         for (int i = 0; i < doc_count; i++) {
-            int wc = collection->docs[i].word_count;
+            int wc = collection->documents[i].word_count;
             total_words += wc;
             printf("  Doc %d (%s): %d words\n",
-                   collection->docs[i].id,
-                   collection->docs[i].filename,
+                   collection->documents[i].id,
+                   collection->documents[i].filename,
                    wc);
         }
     }
