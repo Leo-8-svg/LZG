@@ -6,7 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "collection.h"
+
+#ifndef MAX_WORD
+#define MAX_WORD 128
+#endif
 
 /*
  * ------------------------- Adapter layer -------------------------
@@ -35,8 +38,7 @@ void search_clear_adapter_hooks(void)
 static int ascii_is_token_char(unsigned char c)
 {
     return (c >= (unsigned char)'a' && c <= (unsigned char)'z') ||
-           (c >= (unsigned char)'A' && c <= (unsigned char)'Z') ||
-           (c >= (unsigned char)'0' && c <= (unsigned char)'9');
+           (c >= (unsigned char)'A' && c <= (unsigned char)'Z');
 }
 
 static unsigned char ascii_to_lower(unsigned char c)
@@ -63,7 +65,7 @@ static void free_token_array(char **tokens, int count)
 /*
  * Default query tokenizer used by the standalone module.  It is ASCII-only
  * and therefore has deterministic behavior independent of the process
- * locale.  Non-alphanumeric characters are separators.
+ * locale.  Non-letter characters are separators.
  */
 static int default_tokenize_query(const char *raw_query,
                                   char ***out_tokens,
@@ -112,6 +114,9 @@ static int default_tokenize_query(const char *raw_query,
             i++;
         }
         token_length = i - start;
+        if (token_length >= MAX_WORD) {
+            token_length = MAX_WORD - 1;
+        }
         token = (char *)malloc(token_length + 1U);
         if (token == NULL) {
             free_token_array(tokens, count);
@@ -206,7 +211,7 @@ const char *adapter_get_doc_filename(const void *doc_collection,
      * collection type is known.  The integration implementation should
      * replace this return with the team collection lookup.
      */
-    return collection_filename(doc_collection, doc_id);
+    return NULL;
 }
 
 int adapter_get_doc_total_terms(const void *doc_collection,
@@ -217,7 +222,7 @@ int adapter_get_doc_total_terms(const void *doc_collection,
     }
 
     /* See adapter_get_doc_filename(); install the final collection adapter. */
-    return collection_wordcount(doc_collection,doc_id);
+    return -1;
 }
 
 /*
