@@ -24,15 +24,18 @@ static int read_line_strict(char *buf, size_t size, int *was_truncated) {
     if (buf == NULL || size == 0) {
         return -1;
     }
-    if (fgets(buf, (int)size, stdin) == NULL) {
-        return 0;
-    }
+     if (fgets(buf, (int)size, stdin) == NULL) {
+    return ferror(stdin) ? -1 : 0;
+}
 
     char *nl = strchr(buf, '\n');
-    if (nl != NULL) {
-        *nl = '\0';
-        return 1;
-    }
+     int ch = fgetc(stdin);
+if (ch == '\n') {
+    return 1;
+}
+if (ch == EOF) {
+    return ferror(stdin) ? -1 : 1;
+}
 
     if (was_truncated != NULL) {
         *was_truncated = 1;
