@@ -239,6 +239,7 @@ int index_load(InvertedIndex *index, const char *path)
     int count = 0;
     int doc_id;
     int frequency;
+    int scan_result;
 
     if (index == NULL || path == NULL) {
         return -1;
@@ -258,7 +259,7 @@ int index_load(InvertedIndex *index, const char *path)
     index_free(index);
     index->document_count = docs;
 
-    while (fscanf(file, "%127s %d %d", word, &doc_id, &frequency) == 3) {
+    while ((scan_result = fscanf(file, "%127s %d %d", word, &doc_id, &frequency))== 3) {
         int i;
 
         if (doc_id < 0 || doc_id >= index->document_count || frequency <= 0) {
@@ -275,14 +276,14 @@ int index_load(InvertedIndex *index, const char *path)
         }
         count++;
     }
-    if (fscanf(file, "%127s", word) == 1) {
+    if (scan_result !=EOF || ferror(file)) {
         fclose(file);
         index_free(index);
         return -1;
     }
     fclose(file);
 
-    if (count != postings || index->unique_term_count != terms) {
+    if (count != postings || index->unique_term_count != terms ||index_posting_count(index) != postings) {
         index_free(index);
         return -1;
     }
