@@ -31,9 +31,10 @@ int report_save_results(const SearchResponse *response, const char *path) {
         }
     }
 
-    if (fclose(fp) != 0) {
+    int write_failed = ferror(fp);
+    int close_result = fclose(fp);
+    if (write_failed || close_result != 0) {
         return -1;
     }
-
     return 0;
 }
