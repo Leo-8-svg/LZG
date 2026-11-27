@@ -29,13 +29,17 @@ static int read_line_strict(char *buf, size_t size, int *was_truncated) {
 }
 
     char *nl = strchr(buf, '\n');
-     int ch = fgetc(stdin);
-if (ch == '\n') {
-    return 1;
-}
-if (ch == EOF) {
-    return ferror(stdin) ? -1 : 1;
-}
+    if (nl != NULL) {
+        *nl = '\0';
+        return 1;
+    }
+    int ch = fgetc(stdin);
+    if (ch == '\n') {
+        return 1;
+    }
+    if (ch == EOF) {
+        return ferror(stdin) ? -1 : 1;
+    }
 
     if (was_truncated != NULL) {
         *was_truncated = 1;
