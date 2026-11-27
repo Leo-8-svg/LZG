@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#define MAX_WORD 64
+#define MAX_WORD 128
 #define MAX_DOCS 256
 #define PATH_LEN 256
 
