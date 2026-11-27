@@ -1,4 +1,5 @@
 #include "search.h"
+#include "collection.h"
 
 #include <ctype.h>
 #include <math.h>
@@ -206,12 +207,7 @@ const char *adapter_get_doc_filename(const void *doc_collection,
         return g_adapter_hooks.get_doc_filename(doc_collection, doc_id);
     }
 
-    /*
-     * No generic filename representation exists until Member C's final
-     * collection type is known.  The integration implementation should
-     * replace this return with the team collection lookup.
-     */
-    return NULL;
+    return collection_filename(doc_collection, doc_id);
 }
 
 int adapter_get_doc_total_terms(const void *doc_collection,
@@ -221,8 +217,7 @@ int adapter_get_doc_total_terms(const void *doc_collection,
         return g_adapter_hooks.get_doc_total_terms(doc_collection, doc_id);
     }
 
-    /* See adapter_get_doc_filename(); install the final collection adapter. */
-    return -1;
+    return collection_wordcount(doc_collection, doc_id);
 }
 
 /*

@@ -2,8 +2,7 @@
 #define COMP1028_INDEX_H
 
 #include <stdio.h>
-
-#include "search.h"
+#include "include/tokenizer.h"
 
 #ifndef MAX_WORD
 #define MAX_WORD 128
@@ -11,19 +10,31 @@
 
 #define INDEX_WORD_LEN MAX_WORD
 
-typedef struct Document {
-    int id;
-    char filename[256];
-} Document;
+typedef struct PostingNode {
+    int doc_id;
+    int term_frequency;
+    struct PostingNode *next;
+} PostingNode;
 
-int next_word(FILE *file, char *word, int size);
+typedef struct IndexEntry {
+    char *term;
+    PostingNode *postings;
+    struct IndexEntry *next;
+} IndexEntry;
+
+typedef struct InvertedIndex {
+    IndexEntry *head;
+    int document_count;
+    int unique_term_count;
+} InvertedIndex;
+
+#define SEARCH_POSTING_DOC_ID(posting) ((posting)->doc_id)
+#define SEARCH_POSTING_FREQUENCY(posting) ((posting)->term_frequency)
+#define SEARCH_POSTING_NEXT(posting) ((posting)->next)
 
 int index_add_occurrence(InvertedIndex *index, const char *word, int doc_id);
-int index_build_from_documents(InvertedIndex *index,
-                               const Document *docs,
-                               int count);
+int index_build_from_documents(InvertedIndex *index, const Document *docs, int count);
 void index_free(InvertedIndex *index);
-
 const PostingNode *index_lookup(const InvertedIndex *index, const char *word);
 int index_posting_count(const InvertedIndex *index);
 int index_save(const InvertedIndex *index, const char *path);
